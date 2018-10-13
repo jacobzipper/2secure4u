@@ -116,6 +116,37 @@ NOTE: Ports when sending data are assumed for now.
 
 ### HANDS HAVE BEEN SHAKEN NOW DATA TRANSFER
 
+This part doesn't really need to be explained as in depth as the handshake
+
+As of now, we have a secure way of transferring data between client and server
+
+They'll do a quick diffie hellman exchange to share a secret to encrypt the actual data exchanged (super redundant, but whateverrrrr it's funnnnnnn)
+
+To take things to the next level, it makes sense to verify that what is sent to the server is complete and not corrupted
+
+To do so................... Blockchain!
+
+Not meme crypto blockchain (that would be gross), but the actual blockchain data structure
+
+To create the blockchain, we'll use a simple doubly linked list like this
+
+...<->{hash: bcrypt(this.previous.hash + currentbyte), data: aes(currentbyte, diffiehellmansecret)}<->{hash: bcrypt(this.previous.hash + nextbyte), data: aes(nextbyte, diffiehellmansecret)}<->... (In this case, the addition sign appends to the byte array)
+
+NOTE: This is disgustingly suboptimal. Will revise after proof of concept. Bit sizes are also up in the air until implementation
+
+In the case the request gets corrupted in transit (someone sets a bunch of bits or who knows), we'll have to have some sort of identifier on the head node to delegate whether it's actually corrupt to begin with
+
+With that in mind, the head node will always be
+
+null<-{hash: bcrypt(aes("2SECURE4UPROTOCOL".bytes, diffiehellmansecret) + firstbyte), data: aes(firstbyte, diffiehellmansecret)}<->...
+
+The blockchain will take literally FOREVER to compute with these algorithms, so we'll send in chunks
+
+To save memory client side, once the next node in the chain is fully calculated, we take the previous, serialize it into a byte array, encrypt with the servers rsa public key, then send it up
+
+rsa([(hash:184bit)(data:2048bit)])
+
+Depending on implementation, the server can decrypt the data, verify nodes on the fly, then do whatever it wants with the data
 
 ### Goals (Ordered by priority)
 1. Implement proof of concept locally with some gross python scripts
@@ -126,3 +157,13 @@ NOTE: Ports when sending data are assumed for now.
 5. Add tests to client libraries that simulate all kinds of exploits/cases
 6. Research into requests/http(s) server libraries and hack together a "tsfu://" protocol that mirrors http(s) functionality with tsfu security
 7. Look into actual algorithm optimizations and other ways to make the protocol more stupidly secure/redundant
+
+### Notes
+
+This is all realllllyyyy bad right now
+
+I tried my best for the past 12ish hours to make you all a cool new thing
+
+I don't think I'll give up on this project, so I will definitely definitely definitely revise this later to not be so gross
+
+Suggestions, comments, concerns, contributions, and h8 all welcome!
