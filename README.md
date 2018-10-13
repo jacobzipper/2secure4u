@@ -138,7 +138,7 @@ In the case the request gets corrupted in transit (someone sets a bunch of bits 
 
 With that in mind, the head node will always be
 
-null<-{hash: bcrypt(aes("2SECURE4UPROTOCOL".bytes, diffiehellmansecret) + firstbyte), data: aes(firstbyte, diffiehellmansecret)}<->...
+null<-{hash: bcrypt("2SECURE4UPROTOCOL".bytes + firstbyte), data: aes(firstbyte, diffiehellmansecret)}<->...
 
 The blockchain will take literally FOREVER to compute with these algorithms, so we'll send in chunks
 
